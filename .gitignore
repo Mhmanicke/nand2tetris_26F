@@ -1,0 +1,4 @@
+*.out
+*.hack
+*.class
+.DS_Store
