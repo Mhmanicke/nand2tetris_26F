@@ -21,7 +21,7 @@ nand2tetris:
     -tools
 ```
 
-The `tools` subfolder is where all the similation software can be found. We will not change any of these contents.
+The `tools` subfolder is where all the simulation software can be found. We will not change any of these contents.
 
 The `projects` subfolder contains all the provided assignment and test files for completing the course. Below you will reproduce this folder in your own github space as a private git repository. This will allow for easy control and assessment as we progress through the course.
 
@@ -60,6 +60,37 @@ Of note, the above assumes you have [set up an ssh key](https://docs.github.com/
 * **HTTPS:** `https://github.com/profstough/nand2tetris_26F.git`
 
 
+
+## MAC/Linux Setup Guide
+
+### 1. Add Hardware Simulator Tools to Your PATH
+To run `HardwareSimulator.sh` from your terminal without typing the full path every time:
+
+**For Bash users** (add to `~/.bashrc`):
+```bash
+export PATH="$PATH:/path/to/nand2tetris/tools"
+```
+
+**For Zsh users** (add to `~/.zshrc`):
+```bash
+export PATH="$PATH:/path/to/nand2tetris/tools"
+```
+
+Replace `/path/to/nand2tetris/tools` with the actual path to your extracted `tools` folder (e.g., `$HOME/nand2tetris/tools`).
+
+After editing your shell configuration file, reload it:
+```bash
+# For Bash
+source ~/.bashrc
+
+# For Zsh
+source ~/.zshrc
+```
+
+Now you can run the simulator directly:
+```bash
+HardwareSimulator.sh DMux4Way.tst
+```
 
 
 ## Windows Setup Guide
