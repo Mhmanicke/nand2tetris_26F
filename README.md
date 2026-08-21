@@ -1,6 +1,6 @@
 # Nand2Tetris Student Starter Repository
 
-Welcome! This repository contains the starter files for the Nand2Tetris coursework. 
+Welcome! This repository contains the starter files for the [Nand2Tetris](https://www.nand2tetris.org/) coursework. 
 
 Nand2Tetris software requires you to have Java installed. It's likely you already have Java installed, but check out their own instructions for [installing the software](https://www.nand2tetris.org/software).
 
