@@ -4,7 +4,7 @@ Welcome! This repository contains the starter files for the [Nand2Tetris](https:
 
 Nand2Tetris software requires you to have Java installed. It's likely you already have Java installed, but check out their own instructions for [installing the software](https://www.nand2tetris.org/software).
 
-I like the **[VS Code](https://code.visualstudio.com/)** *integrated development environment (IDE)* for working in the course, and also for AI integration. 
+I like the **[VS Code](https://code.visualstudio.com/)** *integrated development environment (IDE)* for working in the course, and also for AI integration. Check out [Antigravity](https://antigravity.google/download) (with personal gmail) or its [vscode integration](https://antigravity.google/docs/ide/extensions/vscode).
 
 The instructions below are principally about allowing you to work with git version control. 
 
