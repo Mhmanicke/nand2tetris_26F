@@ -19,6 +19,27 @@ CHIP Mux8Way16 {
        sel[3];
     OUT out[16];
 
+// Chooses 1 of eight 16-bit inputs (a through h).
+// sel[0..1] chooses one input from each group of four.
+// This gives one result from a-d and one result from e-h.
+// sel[2] then chooses which group's result becomes the final output.
     PARTS:
-    //// Replace this comment with your code.
+    Mux4Way16(
+        a=a, b=b, c=c, d=d,
+        sel=sel[0..1],
+        out=abcd
+    );
+
+    Mux4Way16(
+        a=e, b=f, c=g, d=h,
+        sel=sel[0..1],
+        out=efgh
+    );
+
+    Mux16(
+        a=abcd,
+        b=efgh,
+        sel=sel[2],
+        out=out
+    );
 }

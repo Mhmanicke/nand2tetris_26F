@@ -10,6 +10,15 @@ CHIP Xor {
     IN a, b;
     OUT out;
 
+// XOR is 1 only when the inputs are different.
+// Check the two possible cases: a=1,b=0 OR a=0,b=1.
+// Then OR those two cases together.
     PARTS:
-    //// Replace this comment with your code.
+    Not(in=a, out=notA);
+    Not(in=b, out=notB);
+
+    And(a=a, b=notB, out=aAndNotB);
+    And(a=notA, b=b, out=notAAndB);
+
+    Or(a=aAndNotB, b=notAAndB, out=out);
 }

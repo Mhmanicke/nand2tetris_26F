@@ -10,6 +10,11 @@ CHIP Or {
     IN a, b;
     OUT out;
 
+// OR should be 1 when either input is 1.
+// Invert a and b first, then NAND them. 
+// By De Morgan's law this gives OR.
     PARTS:
-    //// Replace this comment with your code.
-}
+    Not(in=a, out=notA);
+    Not(in=b, out=notB);
+    Nand(a=notA, b=notB, out=out);
+}  

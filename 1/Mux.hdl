@@ -10,6 +10,15 @@ CHIP Mux {
     IN a, b, sel;
     OUT out;
 
+// Mux chooses which input gets sent to out:
+// sel=0 chooses a, sel=1 chooses b.
+// NOT sel controls the a path, while sel controls the b path.
+// Only one path is active, then the two paths are ORed together.
     PARTS:
-    //// Replace this comment with your code.
+    Not(in=sel, out=notSel);
+
+    And(a=a, b=notSel, out=aSelected);
+    And(a=b, b=sel, out=bSelected);
+
+    Or(a=aSelected, b=bSelected, out=out);
 }

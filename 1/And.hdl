@@ -10,6 +10,10 @@ CHIP And {
     IN a, b;
     OUT out;
     
+// NAND gives the opposite of AND.
+// First NAND a and b, then NOT that result to get the 
+// normal AND output.
     PARTS:
-    //// Replace this comment with your code.
+    Nand(a=a, b=b, out=nandOut);
+    Not(in=nandOut, out=out);
 }

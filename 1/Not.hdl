@@ -10,6 +10,8 @@ CHIP Not {
     IN in;
     OUT out;
 
+// NOT flips the input: 0->1 and 1->0.
+// Using the same input for both NAND inputs makes NAND act like NOT.
     PARTS:
-    //// Replace this comment with your code.
+    Nand(a=in, b=in, out=out);
 }

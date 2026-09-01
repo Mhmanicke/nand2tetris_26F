@@ -11,6 +11,12 @@ CHIP DMux {
     IN in, sel;
     OUT a, b;
 
+// DMux takes one input and chooses which output receives it:
+// sel=0 sends in to a, sel=1 sends in to b.
+// NOT sel controls the a path, while sel controls the b path.
     PARTS:
-    //// Replace this comment with your code.
+    Not(in=sel, out=notSel);
+
+    And(a=in, b=notSel, out=a);
+    And(a=in, b=sel, out=b);
 }
