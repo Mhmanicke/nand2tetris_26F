@@ -10,6 +10,11 @@ CHIP HalfAdder {
     OUT sum,    // Right bit of a + b 
         carry;  // Left bit of a + b
 
+//The XOR determines the sum because it outputs 1 when exactly 
+//one input is 1. The AND determines the carry because a carry 
+//only happens when both inputs are 1.
     PARTS:
-    //// Replace this comment with your code.
+    // XOR gives the sum, AND gives the carry 
+    Xor(a=a, b=b, out=sum);
+    And(a=a, b=b, out=carry);
 }

@@ -41,5 +41,71 @@ CHIP ALU {
         ng;      // if (out < 0)  equals 1, else 0
 
     PARTS:
-    //// Replace this comment with your code.
+    // PROCESS THE X INPUT
+    // zx decides whether we use the original x value or replace it with 0.
+    // zx = 0 -> keep x
+    // zx = 1 -> make x equal to 0
+    Mux16(a=x, b=false, sel=zx, out=xZeroed);
+    // Make an inverted version of the x value.
+    Not16(in=xZeroed, out=xNot);
+    // nx decides whether we keep x or use its inverted version.
+    // nx = 0 -> keep x
+    // nx = 1 -> NOT x
+    Mux16(a=xZeroed, b=xNot, sel=nx, out=xFinal);
+    //PROCESS THE Y INPUT
+    // This does the same thing as above, but for y.
+    // zy = 0 -> keep y
+    // zy = 1 -> make y equal to 0
+    Mux16(a=y, b=false, sel=zy, out=yZeroed);
+    // Make an inverted version of y.
+    Not16(in=yZeroed, out=yNot);
+    // ny decides whether we keep y or use NOT y.
+    // ny = 0 -> keep y
+    // ny = 1 -> NOT y
+    Mux16(a=yZeroed, b=yNot, sel=ny, out=yFinal);
+    // CALCULATE BOTH POSSIBLE OPERATIONS
+    // The ALU can either AND the two processed inputs
+    // or ADD the two processed inputs.
+    // We calculate both possibilities first.
+    // Bit-by-bit AND of x and y.
+    And16(a=xFinal, b=yFinal, out=andResult);
+    // Add the two 16-bit values together.
+    Add16(a=xFinal, b=yFinal, out=addResult);
+    // CHOOSE BETWEEN AND AND ADD
+    // f selects which operation becomes the ALU result.
+    // f = 0 -> x AND y
+    // f = 1 -> x + y
+    Mux16(a=andResult, b=addResult, sel=f, out=functionResult);
+    // POSSIBLY NEGATE THE OUTPUT
+    // First create the NOT version of the result.
+    Not16(in=functionResult, out=notResult);
+    // no determines whether the normal or inverted result
+    // becomes the final output.
+    // no = 0 -> normal result
+    // no = 1 -> NOT result
+    // We also split the output into two groups of 8 bits so
+    // that we can determine whether the whole result is zero.
+    // out[15] is also sent directly to ng because the highest
+    // bit tells us whether a two's-complement number is negative.
+    Mux16(
+        a=functionResult,
+        b=notResult,
+        sel=no,
+        out=out,
+        out[0..7]=outLow,
+        out[8..15]=outHigh,
+        out[15]=ng
+    );
+    // DETERMINE THE ZERO FLAG (zr)
+    // We need zr = 1 only when ALL 16 output bits are zero.
+    // Or8Way checks whether any bit in each half is 1.
+    Or8Way(in=outLow, out=lowHasOne);
+    Or8Way(in=outHigh, out=highHasOne);
+    // Combine the results from the lower and upper 8 bits.
+    // If either half contains a 1, the output is not zero.
+    Or(a=lowHasOne, b=highHasOne, out=outputHasOne);
+    // Invert that result.
+    // outputHasOne = 0 -> zr = 1
+    // outputHasOne = 1 -> zr = 0
+    Not(in=outputHasOne, out=zr);
 }

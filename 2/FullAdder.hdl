@@ -10,6 +10,14 @@ CHIP FullAdder {
     OUT sum,     // Right bit of a + b + c
         carry;   // Left bit of a + b + c
 
+//I use one HalfAdder to add a and b, then another HalfAdder 
+//to add the incoming carry. The two possible carry outputs 
+//are ORed together.
     PARTS:
-    //// Replace this comment with your code.
+    // Add a and b first
+    HalfAdder(a=a, b=b, sum=sum1, carry=carry1);
+    // Add the incoming carry to the first sum
+    HalfAdder(a=sum1, b=c, sum=sum, carry=carry2);
+    // Either addition can create the final carry
+    Or(a=carry1, b=carry2, out=carry);
 }
