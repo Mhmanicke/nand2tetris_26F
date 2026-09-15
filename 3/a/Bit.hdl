@@ -13,5 +13,12 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    //// Replace this comment with your code.
+    // IN = What value do i want to store?
+    // load = Do i want to store it?
+    // If load = 1, store the new input.
+    // If load = 0, keep the old value.
+    Mux(a=oldOut, b=in, sel=load, out=muxOut);
+
+    // DFF stores the selected bit.
+    DFF(in=muxOut, out=oldOut, out=out);
 }

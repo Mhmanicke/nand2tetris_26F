@@ -14,5 +14,40 @@ CHIP PC {
     OUT out[16];
     
     PARTS:
-    //// Replace this comment with your code.
+    // Create current value + 1.
+    Inc16(in=current, out=incremented);
+
+    // If inc = 1, choose current + 1.
+    // Otherwise keep current.
+    Mux16(
+        a=current,
+        b=incremented,
+        sel=inc,
+        out=incChoice
+    );
+
+    // If load = 1, load the external input.
+    Mux16(
+        a=incChoice,
+        b=in,
+        sel=load,
+        out=loadChoice
+    );
+
+    // If reset = 1, reset everything to 0.
+    // reset has highest priority.
+    Mux16(
+        a=loadChoice,
+        b=false,
+        sel=reset,
+        out=next
+    );
+
+    // Always load next into the register.
+    Register(
+        in=next,
+        load=true,
+        out=current,
+        out=out
+    );
 }
