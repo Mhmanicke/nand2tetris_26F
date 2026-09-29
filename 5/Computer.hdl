@@ -13,10 +13,50 @@
  * the screen may show some output, the user may be expected to enter
  * some input using the keyboard, or the program may do some procerssing. 
  */
+
+// This chip connects the CPU, Memory, and ROM32K together to create the
+// complete Hack computer. ROM32K provides instructions to the CPU, the
+// CPU executes those instructions and reads or writes data in Memory,
+// and the program counter determines which instruction is executed next.
+
 CHIP Computer {
 
     IN reset;
 
     PARTS:
     //// Replace this comment with your code.
+    
+    // SECTION 1: Instruction memory
+    // ROM32K stores the machine language program.
+    // The CPU's program counter determines
+    // which instruction to read next.
+    ROM32K(address=pcOut, out=instruction);
+
+    // SECTION 2: CPU
+    // The CPU receives the current instruction
+    // from ROM and data from Memory.
+    // It executes the instruction and produces:
+    // - outM: data to write into memory
+    // - writeM: whether memory should be written
+    // - addressM: which memory address to access
+    // - pc: address of the next instruction
+    CPU(inM=memoryOut,
+        instruction=instruction,
+        reset=reset,
+        outM=cpuOut,
+        writeM=writeMemory,
+        addressM=memoryAddress,
+        pc=pcOut);
+
+
+    // SECTION 3: Data memory
+    // Memory receives the CPU's output,
+    // write signal, and memory address.
+    // If writeMemory is 1, it stores the data.
+    // It also sends the selected memory value
+    // back to the CPU.
+    Memory(in=cpuOut,
+           load=writeMemory,
+           address=memoryAddress,
+           out=memoryOut);
 }

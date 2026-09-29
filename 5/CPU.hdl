@@ -33,4 +33,99 @@ CHIP CPU {
 
     PARTS:
 	//// Replace this comment with your code.
+    
+    // SECTION 1: Determine instruction type
+    // The highest instruction bit tells us the type.
+    // 0 = A-instruction
+    // 1 = C-instruction
+    Not(in=instruction[15], out=isA);
+    And(a=instruction[15], b=true, out=isC);
+
+
+    // SECTION 2: A and D registers
+    // The A register loads for every A-instruction.
+    // It also loads when a C-instruction has
+    // its A destination bit set.
+    And(a=isC, b=instruction[5], out=destA);
+    Or(a=isA, b=destA, out=loadA);
+    // A-instructions load the instruction value.
+    // C-instructions can load the ALU result.
+    Mux16(a=instruction, b=aluOut,
+          sel=isC, out=aInput);
+    // Store the selected value in the A register.
+    // The lower 15 bits provide the memory address.
+    ARegister(in=aInput, load=loadA,
+              out=aOut, out[0..14]=addressM);
+    // The D register only loads when executing
+    // a C-instruction with its D destination set.
+    And(a=isC, b=instruction[4], out=loadD);
+
+    DRegister(in=aluOut, load=loadD, out=dOut);
+
+    // SECTION 3: ALU inputs and calculation
+    // The ALU's first input is always D.
+    // The second input depends on the a bit:
+    // 0 = value stored in A
+    // 1 = value read from memory (inM)
+    Mux16(a=aOut, b=inM,
+          sel=instruction[12], out=aluY);
+    // The six computation bits control the ALU.
+    // The ALU also reports whether its result
+    // is zero (zr) or negative (ng).
+    ALU(x=dOut, y=aluY,
+        zx=instruction[11],
+        nx=instruction[10],
+        zy=instruction[9],
+        ny=instruction[8],
+        f=instruction[7],
+        no=instruction[6],
+        out=aluOut,
+        out=outM,
+        zr=zr,
+        ng=ng);
+
+    // SECTION 4: Memory write control
+    // The M destination bit is instruction[3].
+    // Only C-instructions can write to memory.
+    And(a=isC, b=instruction[3], out=writeM);
+
+    // SECTION 5: Jump logic
+    // The ALU gives us two status flags:
+    // zr = 1 when the result is zero.
+    // ng = 1 when the result is negative.
+    // A positive result is neither zero
+    // nor negative.
+    Not(in=zr, out=notZero);
+    Not(in=ng, out=notNegative);
+    And(a=notZero, b=notNegative,
+        out=isPositive);
+    // Decode the three jump instruction bits.
+    // instruction[0] = jump if positive
+    // instruction[1] = jump if zero
+    // instruction[2] = jump if negative
+    And(a=instruction[0], b=isPositive,
+        out=jumpPositive);
+    And(a=instruction[1], b=zr,
+        out=jumpZero);
+    And(a=instruction[2], b=ng,
+        out=jumpNegative);
+    // Combine all three possible jump conditions.
+    // If any selected condition is true,
+    // the CPU should perform a jump.
+    Or(a=jumpPositive, b=jumpZero,
+       out=jumpPosOrZero);
+    Or(a=jumpPosOrZero, b=jumpNegative,
+       out=jumpCondition);
+    // Only C-instructions can cause a jump.
+    And(a=isC, b=jumpCondition,
+        out=loadPC);
+
+    // SECTION 6: Program Counter (PC)
+    // The PC stores the address of the next
+    // instruction to execute.
+    // reset = 1: restart at instruction 0.
+    // load = 1: jump to the address in A.
+    // Otherwise: increment to the next instruction.
+    PC(in=aOut, load=loadPC, inc=true,
+       reset=reset, out[0..14]=pc);
 }
