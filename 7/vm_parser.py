@@ -87,3 +87,4 @@ class Parser:
                 line = line.split('//', 1)[0].strip()
                 if line:
                     self._lines.append(line)
+

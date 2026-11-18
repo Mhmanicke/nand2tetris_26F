@@ -119,3 +119,4 @@ class CodeWriter:
 
     def writeComment(self, comment):
         self._write(f'\n// {comment}\n')
+

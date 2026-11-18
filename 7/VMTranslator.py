@@ -41,3 +41,4 @@ if __name__ == '__main__':
         print('Usage: python VMTranslator.py path/to/Program.vm')
         sys.exit(1)
     vm_translate(sys.argv[1])
+
