@@ -1,0 +1,617 @@
+function Game.run 1
+push constant 200
+call Array.new 1
+pop static 0
+push constant 200
+call Array.new 1
+pop static 1
+push constant 3
+pop static 2
+push constant 0
+push static 0
+add
+push constant 15
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push static 1
+add
+push constant 10
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push static 0
+add
+push constant 14
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push static 1
+add
+push constant 10
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 2
+push static 0
+add
+push constant 13
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 2
+push static 1
+add
+push constant 10
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+pop static 3
+push constant 22
+pop static 4
+push constant 10
+pop static 5
+push constant 0
+pop static 6
+push constant 17
+pop static 7
+push constant 0
+not
+pop static 8
+call Display.startScreen 0
+pop temp 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push static 2
+lt
+not
+if-goto WHILE_END0
+push local 0
+push static 0
+add
+pop pointer 1
+push that 0
+push local 0
+push static 1
+add
+pop pointer 1
+push that 0
+call Display.drawSnake 2
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push static 4
+push static 5
+call Display.drawFood 2
+pop temp 0
+label WHILE_EXP1
+push static 8
+not
+if-goto WHILE_END1
+call Game.readInput 0
+pop temp 0
+call Game.moveSnake 0
+pop temp 0
+push constant 110
+call Sys.wait 1
+pop temp 0
+goto WHILE_EXP1
+label WHILE_END1
+push static 6
+call Display.gameOver 1
+pop temp 0
+label WHILE_EXP2
+call Keyboard.keyPressed 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END2
+push constant 20
+call Sys.wait 1
+pop temp 0
+goto WHILE_EXP2
+label WHILE_END2
+label WHILE_EXP3
+call Keyboard.keyPressed 0
+push constant 0
+eq
+not
+if-goto WHILE_END3
+push constant 20
+call Sys.wait 1
+pop temp 0
+goto WHILE_EXP3
+label WHILE_END3
+push static 0
+call Array.dispose 1
+pop temp 0
+push static 1
+call Array.dispose 1
+pop temp 0
+push constant 0
+return
+function Game.readInput 1
+call Keyboard.keyPressed 0
+pop local 0
+push local 0
+push constant 131
+eq
+push static 3
+push constant 2
+eq
+not
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop static 3
+label IF_FALSE0
+push local 0
+push constant 132
+eq
+push static 3
+push constant 3
+eq
+not
+and
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 1
+pop static 3
+label IF_FALSE1
+push local 0
+push constant 133
+eq
+push static 3
+push constant 0
+eq
+not
+and
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 2
+pop static 3
+label IF_FALSE2
+push local 0
+push constant 130
+eq
+push static 3
+push constant 1
+eq
+not
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 3
+pop static 3
+label IF_FALSE3
+push constant 0
+return
+function Game.moveSnake 5
+push constant 0
+push static 0
+add
+pop pointer 1
+push that 0
+pop local 0
+push constant 0
+push static 1
+add
+pop pointer 1
+push that 0
+pop local 1
+push static 3
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 1
+push constant 1
+sub
+pop local 1
+label IF_FALSE0
+push static 3
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 0
+push constant 1
+add
+pop local 0
+label IF_FALSE1
+push static 3
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 1
+push constant 1
+add
+pop local 1
+label IF_FALSE2
+push static 3
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 0
+push constant 1
+sub
+pop local 0
+label IF_FALSE3
+push constant 0
+pop local 3
+push local 0
+push static 4
+eq
+push local 1
+push static 5
+eq
+and
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push constant 0
+not
+pop local 3
+label IF_FALSE4
+push local 0
+push local 1
+push local 3
+call Game.checkCollision 3
+pop local 4
+push local 4
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+pop static 8
+push constant 0
+return
+label IF_FALSE5
+push local 3
+not
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push static 2
+push constant 1
+sub
+push static 0
+add
+pop pointer 1
+push that 0
+push static 2
+push constant 1
+sub
+push static 1
+add
+pop pointer 1
+push that 0
+call Display.eraseSnake 2
+pop temp 0
+label IF_FALSE6
+push local 3
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push static 2
+push constant 200
+lt
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push static 2
+push constant 1
+add
+pop static 2
+label IF_FALSE8
+push static 6
+push constant 1
+add
+pop static 6
+push static 6
+call Display.showScore 1
+pop temp 0
+label IF_FALSE7
+push static 2
+push constant 1
+sub
+pop local 2
+label WHILE_EXP0
+push local 2
+push constant 0
+gt
+not
+if-goto WHILE_END0
+push local 2
+push static 0
+add
+push local 2
+push constant 1
+sub
+push static 0
+add
+pop pointer 1
+push that 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push static 1
+add
+push local 2
+push constant 1
+sub
+push static 1
+add
+pop pointer 1
+push that 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push constant 1
+sub
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+push static 0
+add
+push local 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push static 1
+add
+push local 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push local 1
+call Display.drawSnake 2
+pop temp 0
+push local 3
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+call Game.newFood 0
+pop temp 0
+label IF_FALSE9
+push constant 0
+return
+function Game.checkCollision 1
+push argument 0
+push constant 0
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+return
+label IF_FALSE0
+push argument 0
+push constant 31
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+return
+label IF_FALSE1
+push argument 1
+push constant 4
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+not
+return
+label IF_FALSE2
+push argument 1
+push constant 15
+gt
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+not
+return
+label IF_FALSE3
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push static 2
+lt
+not
+if-goto WHILE_END0
+push argument 0
+push local 0
+push static 0
+add
+pop pointer 1
+push that 0
+eq
+push argument 1
+push local 0
+push static 1
+add
+pop pointer 1
+push that 0
+eq
+and
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 0
+push static 2
+push constant 1
+sub
+lt
+push argument 2
+or
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+not
+return
+label IF_FALSE5
+label IF_FALSE4
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Game.newFood 3
+push constant 0
+pop local 1
+push constant 0
+not
+pop local 2
+label WHILE_EXP0
+push local 2
+push local 1
+push constant 200
+lt
+and
+not
+if-goto WHILE_END0
+push static 7
+push constant 37
+add
+pop static 7
+push static 7
+push constant 30000
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push static 7
+push constant 30000
+sub
+pop static 7
+label IF_FALSE0
+push static 7
+push static 7
+push constant 32
+call Math.divide 2
+push constant 32
+call Math.multiply 2
+sub
+pop static 4
+push static 7
+push constant 53
+add
+pop static 7
+push static 7
+push constant 30000
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push static 7
+push constant 30000
+sub
+pop static 7
+label IF_FALSE1
+push constant 4
+push static 7
+push static 7
+push constant 12
+call Math.divide 2
+push constant 12
+call Math.multiply 2
+sub
+add
+pop static 5
+push constant 0
+pop local 2
+push constant 0
+pop local 0
+label WHILE_EXP1
+push local 0
+push static 2
+lt
+not
+if-goto WHILE_END1
+push static 4
+push local 0
+push static 0
+add
+pop pointer 1
+push that 0
+eq
+push static 5
+push local 0
+push static 1
+add
+pop pointer 1
+push that 0
+eq
+and
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+not
+pop local 2
+label IF_FALSE2
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP1
+label WHILE_END1
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push static 4
+push static 5
+call Display.drawFood 2
+pop temp 0
+push constant 0
+return

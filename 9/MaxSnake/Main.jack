@@ -1,0 +1,12 @@
+
+class Main {
+
+    // This is where the program starts
+    function void main() {
+
+        // Start the Snake game
+        do Game.run();
+
+        return;
+    }
+}

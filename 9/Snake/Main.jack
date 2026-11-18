@@ -1,0 +1,295 @@
+class Main {
+
+    function void main() {
+        var Array snakeX, snakeY;
+        var int length, direction;
+        var int foodX, foodY;
+        var int score, headX, headY;
+        var int key, i, j;
+        var int newX, newY;
+        var int seed, attempts;
+        var boolean playing, hit, eating;
+
+        // Create arrays for the snake
+        let snakeX = Array.new(200);
+        let snakeY = Array.new(200);
+
+        // Starting snake position
+        let length = 3;
+        let snakeX[0] = 15;
+        let snakeY[0] = 10;
+        let snakeX[1] = 14;
+        let snakeY[1] = 10;
+        let snakeX[2] = 13;
+        let snakeY[2] = 10;
+
+        // Direction: 0=up, 1=right,
+        // 2=down, 3=left
+        let direction = 1;
+
+        let foodX = 22;
+        let foodY = 10;
+        let score = 0;
+        let seed = 17;
+        let playing = true;
+
+        // Clear screen and show instructions
+        do Screen.clearScreen();
+
+        do Output.moveCursor(0, 0);
+        do Output.printString("SNAKE GAME");
+
+        do Output.moveCursor(1, 0);
+        do Output.printString("Arrow keys to move");
+
+        do Output.moveCursor(2, 0);
+        do Output.printString("Score: ");
+
+        // Main game loop
+        while (playing) {
+
+            
+            // Read keyboard
+            let key = Keyboard.keyPressed();
+
+            // Up arrow
+            if ((key = 131) & (~(direction = 2))) {
+                let direction = 0;
+            }
+
+            // Right arrow
+            if ((key = 132) & (~(direction = 3))) {
+                let direction = 1;
+            }
+
+            // Down arrow
+            if ((key = 133) & (~(direction = 0))) {
+                let direction = 2;
+            }
+
+            // Left arrow
+            if ((key = 130) & (~(direction = 1))) {
+                let direction = 3;
+            }
+
+
+            // Current head position
+            let headX = snakeX[0];
+            let headY = snakeY[0];
+
+            let newX = headX;
+            let newY = headY;
+
+            // Move in selected direction
+            if (direction = 0) {
+                let newY = newY - 1;
+            }
+
+            if (direction = 1) {
+                let newX = newX + 1;
+            }
+
+            if (direction = 2) {
+                let newY = newY + 1;
+            }
+
+            if (direction = 3) {
+                let newX = newX - 1;
+            }
+
+            // Check wall collisions
+            let hit = false;
+
+            if (newX < 0) {
+                let hit = true;
+            }
+
+            if (newX > 31) {
+                let hit = true;
+            }
+
+            if (newY < 4) {
+                let hit = true;
+            }
+
+            if (newY > 15) {
+                let hit = true;
+            }
+
+            // Check whether food is eaten
+            let eating = false;
+
+            if ((newX = foodX) &
+                (newY = foodY)) {
+                let eating = true;
+            }
+
+            // Check snake body collisions
+            let i = 0;
+
+            while (i < length) {
+                if ((newX = snakeX[i]) &
+                    (newY = snakeY[i])) {
+
+                    // Moving into the old tail
+                    // is allowed if not growing
+                    if ((i < (length - 1)) |
+                        eating) {
+                        let hit = true;
+                    }
+                }
+
+                let i = i + 1;
+            }
+
+            if (hit) {
+                let playing = false;
+            }
+
+            if (~hit) {
+
+                // Erase the old tail
+                if (~eating) {
+                    do Screen.setColor(false);
+                    do Screen.drawRectangle(
+                        snakeX[length - 1] * 16,
+                        snakeY[length - 1] * 16,
+                        (snakeX[length - 1] * 16)
+                            + 14,
+                        (snakeY[length - 1] * 16)
+                            + 14
+                    );
+                }
+
+                // Grow when eating food
+                if (eating) {
+                    if (length < 200) {
+                        let length = length + 1;
+                    }
+
+                    let score = score + 1;
+                }
+
+                // Shift snake body
+                let i = length - 1;
+
+                while (i > 0) {
+                    let j = i - 1;
+                    let snakeX[i] = snakeX[j];
+                    let snakeY[i] = snakeY[j];
+                    let i = i - 1;
+                }
+
+                // Set new head position
+                let snakeX[0] = newX;
+                let snakeY[0] = newY;
+
+                // Draw new head
+                do Screen.setColor(true);
+
+                do Screen.drawRectangle(
+                    newX * 16,
+                    newY * 16,
+                    (newX * 16) + 14,
+                    (newY * 16) + 14
+                );
+
+                // Generate new food position
+                if (eating) {
+                    let attempts = 0;
+                    let eating = true;
+
+                    while (eating &
+                           (attempts < 200)) {
+
+                        let seed = seed + 37;
+
+                        if (seed > 30000) {
+                            let seed = seed - 30000;
+                        }
+
+                        let foodX = seed - (
+                            (seed / 32) * 32
+                        );
+
+                        let seed = seed + 53;
+
+                        if (seed > 30000) {
+                            let seed = seed - 30000;
+                        }
+
+                        let foodY = 4 + (
+                            seed - ((seed / 12) * 12)
+                        );
+
+                        let eating = false;
+                        let i = 0;
+
+                        while (i < length) {
+                            if ((foodX = snakeX[i]) &
+                                (foodY = snakeY[i])) {
+                                let eating = true;
+                            }
+                            let i = i + 1;
+                        }
+
+                        let attempts = attempts + 1;
+                    }
+
+                    // Display updated score
+                    do Output.moveCursor(2, 0);
+                    do Output.printString(
+                        "Score:             "
+                    );
+
+                    do Output.moveCursor(2, 7);
+                    do Output.printInt(score);
+                }
+
+                // Draw food
+                do Screen.setColor(true);
+
+                do Screen.drawRectangle(
+                    (foodX * 16) + 4,
+                    (foodY * 16) + 4,
+                    (foodX * 16) + 10,
+                    (foodY * 16) + 10
+                );
+
+                // Game speed
+                do Sys.wait(110);
+            }
+        }
+
+        // Game over screen
+        do Screen.clearScreen();
+
+        do Output.moveCursor(8, 24);
+        do Output.printString("GAME OVER");
+
+        do Output.moveCursor(10, 22);
+        do Output.printString("Final Score: ");
+        do Output.printInt(score);
+
+        do Output.moveCursor(12, 17);
+        do Output.printString(
+            "Press any key to exit"
+        );
+
+        // Wait for key release
+        while (~(Keyboard.keyPressed() = 0)) {
+            do Sys.wait(20);
+        }
+
+        // Wait for a key press
+        while (Keyboard.keyPressed() = 0) {
+            do Sys.wait(20);
+        }
+
+        // Clean up memory
+        do Array.dispose(snakeX);
+        do Array.dispose(snakeY);
+        
+        return;
+    }
+}

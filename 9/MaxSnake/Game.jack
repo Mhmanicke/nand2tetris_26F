@@ -1,0 +1,320 @@
+
+class Game {
+
+    // Arrays store the position of every snake segment
+    static Array snakeX, snakeY;
+
+    // Basic game information
+    static int length, direction;
+    static int foodX, foodY;
+    static int score, seed;
+
+    // Whether the game is still running
+    static boolean playing;
+
+
+    // Main function that runs the game
+    function void run() {
+        var int i;
+
+        // Create space for up to 200 segments
+        let snakeX = Array.new(200);
+        let snakeY = Array.new(200);
+
+        // Snake starts with three segments
+        let length = 3;
+
+        let snakeX[0] = 15;
+        let snakeY[0] = 10;
+
+        let snakeX[1] = 14;
+        let snakeY[1] = 10;
+
+        let snakeX[2] = 13;
+        let snakeY[2] = 10;
+
+        // Direction:
+        // 0 = up, 1 = right
+        // 2 = down, 3 = left
+        let direction = 1;
+
+        // Set starting food and score
+        let foodX = 22;
+        let foodY = 10;
+        let score = 0;
+        let seed = 17;
+        let playing = true;
+
+        // Draw the starting screen
+        do Display.startScreen();
+
+        // Draw all three starting snake segments
+        let i = 0;
+
+        while (i < length) {
+            do Display.drawSnake(
+                snakeX[i], snakeY[i]
+            );
+
+            let i = i + 1;
+        }
+
+        // Draw the first food
+        do Display.drawFood(foodX, foodY);
+
+        // Keep running until a collision occurs
+        while (playing) {
+
+            // Check keyboard controls
+            do Game.readInput();
+
+            // Move the snake forward
+            do Game.moveSnake();
+
+            // Wait before the next movement
+            do Sys.wait(110);
+        }
+
+        // Show final score
+        do Display.gameOver(score);
+
+        // Wait for key release
+        while (~(Keyboard.keyPressed() = 0)) {
+            do Sys.wait(20);
+        }
+
+        // Wait until the user presses a key
+        while (Keyboard.keyPressed() = 0) {
+            do Sys.wait(20);
+        }
+
+        // Free the memory used by the arrays
+        do Array.dispose(snakeX);
+        do Array.dispose(snakeY);
+
+        return;
+    }
+
+
+    // Check keyboard and update direction
+    function void readInput() {
+        var int key;
+
+        let key = Keyboard.keyPressed();
+
+        // Up arrow, unless moving down
+        if ((key = 131) & (~(direction = 2))) {
+            let direction = 0;
+        }
+
+        // Right arrow, unless moving left
+        if ((key = 132) & (~(direction = 3))) {
+            let direction = 1;
+        }
+
+        // Down arrow, unless moving up
+        if ((key = 133) & (~(direction = 0))) {
+            let direction = 2;
+        }
+
+        // Left arrow, unless moving right
+        if ((key = 130) & (~(direction = 1))) {
+            let direction = 3;
+        }
+
+        return;
+    }
+
+
+    // Move the snake one square forward
+    function void moveSnake() {
+        var int newX, newY;
+        var int i;
+        var boolean eating, hit;
+
+        // Start at the current head position
+        let newX = snakeX[0];
+        let newY = snakeY[0];
+
+        // Calculate next position
+        if (direction = 0) {
+            let newY = newY - 1;
+        }
+
+        if (direction = 1) {
+            let newX = newX + 1;
+        }
+
+        if (direction = 2) {
+            let newY = newY + 1;
+        }
+
+        if (direction = 3) {
+            let newX = newX - 1;
+        }
+
+        // Check whether the next square has food
+        let eating = false;
+
+        if ((newX = foodX) & (newY = foodY)) {
+            let eating = true;
+        }
+
+        // Check whether the next square is safe
+        let hit = Game.checkCollision(
+            newX, newY, eating
+        );
+
+        // End the game if a collision occurred
+        if (hit) {
+            let playing = false;
+            return;
+        }
+
+        // Erase the tail if not growing
+        if (~eating) {
+            do Display.eraseSnake(
+                snakeX[length - 1],
+                snakeY[length - 1]
+            );
+        }
+
+        // Grow and update score after eating
+        if (eating) {
+
+            if (length < 200) {
+                let length = length + 1;
+            }
+
+            let score = score + 1;
+            do Display.showScore(score);
+        }
+
+        // Move each segment to the position
+        // previously occupied by the one ahead
+        let i = length - 1;
+
+        while (i > 0) {
+            let snakeX[i] = snakeX[i - 1];
+            let snakeY[i] = snakeY[i - 1];
+
+            let i = i - 1;
+        }
+
+        // Move the head to its new position
+        let snakeX[0] = newX;
+        let snakeY[0] = newY;
+
+        // Draw the new head
+        do Display.drawSnake(newX, newY);
+
+        // Create new food after eating
+        if (eating) {
+            do Game.newFood();
+        }
+
+        return;
+    }
+
+
+    // Check walls and snake body collisions
+    function boolean checkCollision(
+        int x, int y, boolean eating
+    ) {
+        var int i;
+
+        // Check screen boundaries
+        if (x < 0) {
+            return true;
+        }
+
+        if (x > 31) {
+            return true;
+        }
+
+        if (y < 4) {
+            return true;
+        }
+
+        if (y > 15) {
+            return true;
+        }
+
+        // Check every snake segment
+        let i = 0;
+
+        while (i < length) {
+
+            if ((x = snakeX[i]) &
+                (y = snakeY[i])) {
+
+                // Moving into the old tail is safe
+                // unless the snake is growing
+                if ((i < (length - 1)) | eating) {
+                    return true;
+                }
+            }
+
+            let i = i + 1;
+        }
+
+        // No collision found
+        return false;
+    }
+
+
+    // Generate another food position
+    function void newFood() {
+        var int i, attempts;
+        var boolean occupied;
+
+        let attempts = 0;
+        let occupied = true;
+
+        // Keep trying until an empty square is found
+        while (occupied & (attempts < 200)) {
+
+            // Change seed to create varied positions
+            let seed = seed + 37;
+
+            if (seed > 30000) {
+                let seed = seed - 30000;
+            }
+
+            // X position between 0 and 31
+            let foodX = seed - ((seed / 32) * 32);
+
+            let seed = seed + 53;
+
+            if (seed > 30000) {
+                let seed = seed - 30000;
+            }
+
+            // Y position between 4 and 15
+            let foodY = 4 + (
+                seed - ((seed / 12) * 12)
+            );
+
+            // Check if food overlaps the snake
+            let occupied = false;
+            let i = 0;
+
+            while (i < length) {
+
+                if ((foodX = snakeX[i]) &
+                    (foodY = snakeY[i])) {
+                    let occupied = true;
+                }
+
+                let i = i + 1;
+            }
+
+            let attempts = attempts + 1;
+        }
+
+        // Draw food in its new location
+        do Display.drawFood(foodX, foodY);
+
+        return;
+    }
+}

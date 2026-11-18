@@ -1,0 +1,102 @@
+
+class Display {
+
+    // Set up the game screen
+    function void startScreen() {
+
+        do Screen.clearScreen();
+
+        do Output.moveCursor(0, 0);
+        do Output.printString("SNAKE GAME");
+
+        do Output.moveCursor(1, 0);
+        do Output.printString("Arrow keys to move");
+
+        do Display.showScore(0);
+
+        return;
+    }
+
+
+    // Draw one square of the snake
+    // x and y are positions on our game grid
+    function void drawSnake(int x, int y) {
+
+        do Screen.setColor(true);
+
+        // Each grid square is 16 pixels wide
+        do Screen.drawRectangle(
+            x * 16,
+            y * 16,
+            (x * 16) + 14,
+            (y * 16) + 14
+        );
+
+        return;
+    }
+
+
+    // Erase a square from the screen
+    // Used when the snake moves forward
+    function void eraseSnake(int x, int y) {
+
+        do Screen.setColor(false);
+
+        do Screen.drawRectangle(
+            x * 16,
+            y * 16,
+            (x * 16) + 14,
+            (y * 16) + 14
+        );
+
+        return;
+    }
+
+
+    // Draw the food as a smaller square
+    function void drawFood(int x, int y) {
+
+        do Screen.setColor(true);
+
+        do Screen.drawRectangle(
+            (x * 16) + 4,
+            (y * 16) + 4,
+            (x * 16) + 10,
+            (y * 16) + 10
+        );
+
+        return;
+    }
+
+
+    // Update the score at the top
+    function void showScore(int score) {
+
+        do Output.moveCursor(2, 0);
+        do Output.printString("Score:          ");
+
+        do Output.moveCursor(2, 7);
+        do Output.printInt(score);
+
+        return;
+    }
+
+
+    // Display the final game-over screen
+    function void gameOver(int score) {
+
+        do Screen.clearScreen();
+
+        do Output.moveCursor(8, 24);
+        do Output.printString("GAME OVER");
+
+        do Output.moveCursor(10, 22);
+        do Output.printString("Final Score: ");
+        do Output.printInt(score);
+
+        do Output.moveCursor(12, 17);
+        do Output.printString("Press any key to exit");
+
+        return;
+    }
+}
